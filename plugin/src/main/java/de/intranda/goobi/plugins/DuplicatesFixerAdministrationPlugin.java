@@ -2,6 +2,7 @@ package de.intranda.goobi.plugins;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.goobi.beans.Process;
 import org.goobi.managedbeans.ProcessBean;
 import org.goobi.production.enums.PluginType;
@@ -9,6 +10,7 @@ import org.goobi.production.flow.statistics.hibernate.FilterHelper;
 import org.goobi.production.plugin.interfaces.IAdministrationPlugin;
 import org.goobi.production.plugin.interfaces.IPushPlugin;
 import org.omnifaces.cdi.PushContext;
+
 import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.helper.Helper;
 import de.sub.goobi.persistence.managers.ProcessManager;
@@ -40,10 +42,10 @@ public class DuplicatesFixerAdministrationPlugin implements IAdministrationPlugi
     @Setter
     private String filter;
     @Getter
-    private List<DuplicatesFixerResult> resultsLimited = new ArrayList<DuplicatesFixerResult>();
-    private List<DuplicatesFixerResult> results = new ArrayList<DuplicatesFixerResult>();
+    private List<DuplicatesFixerResult> resultsLimited = new ArrayList<>();
+    private List<DuplicatesFixerResult> results = new ArrayList<>();
     private PushContext pusher;
-    
+
     @Override
     public PluginType getType() {
         return PluginType.Administration;
@@ -60,8 +62,8 @@ public class DuplicatesFixerAdministrationPlugin implements IAdministrationPlugi
     public DuplicatesFixerAdministrationPlugin() {
         log.info("Sample admnistration plugin started");
         filter = ConfigPlugins.getPluginConfig(title).getString("filter", "");
-    } 
-    
+    }
+
     /**
      * action method to run through all processes matching the filter
      */
@@ -69,15 +71,15 @@ public class DuplicatesFixerAdministrationPlugin implements IAdministrationPlugi
         run = true;
         // filter the list of all processes that should be affected
         String query = FilterHelper.criteriaBuilder(filter, false, null, null, null, true, false);
-        List<Integer> tempProcesses = ProcessManager.getIDList(query);
+        List<Integer> tempProcesses = ProcessManager.getIdsForFilter(query);
         resultTotal = tempProcesses.size();
         resultProcessed = 0;
-        results = new ArrayList<DuplicatesFixerResult>();
-        resultsLimited = new ArrayList<DuplicatesFixerResult>();
+        results = new ArrayList<>();
+        resultsLimited = new ArrayList<>();
         Runnable runnable = () -> {
             try {
                 long lastPush = System.currentTimeMillis();
-                List <String> existing = new ArrayList<String>();
+                List <String> existing = new ArrayList<>();
                 for (Integer processId : tempProcesses) {
                     Process process = ProcessManager.getProcessById(processId);
                     //					Thread.sleep(1000);
@@ -93,35 +95,35 @@ public class DuplicatesFixerAdministrationPlugin implements IAdministrationPlugi
                         // load topstruct
                         DocStruct topstruct = ff.getDigitalDocument().getLogicalDocStruct();
                         if (topstruct.getType().isAnchor()) {
-                        	topstruct = topstruct.getAllChildren().get(0);
+                            topstruct = topstruct.getAllChildren().get(0);
                         }
-                        
+
                         // read catalogue identifier
                         MetadataType idType = process.getRegelsatz().getPreferences().getMetadataTypeByName("CatalogIDDigital");
-                        
+
                         List<? extends Metadata> list = topstruct.getAllMetadataByType(idType);
                         if (list.size() > 0) {
                             Metadata md = list.get(0);
                             if (existing.contains(md.getValue())) {
-                            	int suffix = 1;
-                            	while (existing.contains(md.getValue() + "_" + suffix)) {
-                            		suffix++;
-                            	}
-                            	String newID = md.getValue() + "_" + suffix;
-                            	md.setValue(newID);
-                            	process.setTitel(process.getTitel() + "_" + suffix);
-                            	process.writeMetadataFile(ff);
-                            	ProcessManager.saveProcess(process);
-                            	existing.add(newID);
-                            	r.setMessage("Changed to new Identifier: " + newID + " and added suffix '_" + suffix + "' to process title.");
-                            	r.setStatus("FIXED");
+                                int suffix = 1;
+                                while (existing.contains(md.getValue() + "_" + suffix)) {
+                                    suffix++;
+                                }
+                                String newID = md.getValue() + "_" + suffix;
+                                md.setValue(newID);
+                                process.setTitel(process.getTitel() + "_" + suffix);
+                                process.writeMetadataFile(ff);
+                                ProcessManager.saveProcess(process);
+                                existing.add(newID);
+                                r.setMessage("Changed to new Identifier: " + newID + " and added suffix '_" + suffix + "' to process title.");
+                                r.setStatus("FIXED");
                             } else {
-                            	existing.add(md.getValue());  
-                            	r.setStatus("OK");
+                                existing.add(md.getValue());
+                                r.setStatus("OK");
                             }
-                                                      
+
                         }
-                        
+
                     } catch (Exception e) {
                         r.setStatus("ERROR");
                         r.setMessage(e.getMessage());
@@ -149,7 +151,7 @@ public class DuplicatesFixerAdministrationPlugin implements IAdministrationPlugi
         };
         new Thread(runnable).start();
     }
-    
+
     /**
      * show the result inside of the process list
      * 
