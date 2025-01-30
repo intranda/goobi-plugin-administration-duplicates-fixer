@@ -3,7 +3,6 @@
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:x="http://myfaces.apache.org/tomahawk"
 	xmlns:o="http://omnifaces.org/ui"
 	xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
@@ -190,8 +189,8 @@
 																jsf:id="limitResults10">
 																<h:outputText
 																	value="#{msgs.goobiScript_setMaxEntries} 10" />
-																<x:updateActionListener
-																	property="#{AdministrationForm.administrationPlugin.limit}" value="10" />
+																<f:setPropertyActionListener
+																	target="#{AdministrationForm.administrationPlugin.limit}" value="10" />
 															</button>
 														</li>
 														<li>
@@ -200,8 +199,8 @@
 																jsf:id="limitResults100">
 																<h:outputText
 																	value="#{msgs.goobiScript_setMaxEntries} 100" />
-																<x:updateActionListener
-																	property="#{AdministrationForm.administrationPlugin.limit}" value="100" />
+																<f:setPropertyActionListener
+																	target="#{AdministrationForm.administrationPlugin.limit}" value="100" />
 															</button>
 														</li>
 														<li>
@@ -210,8 +209,8 @@
 																jsf:id="limitResults1000">
 																<h:outputText
 																	value="#{msgs.goobiScript_setMaxEntries} 1.000" />
-																<x:updateActionListener
-																	property="#{AdministrationForm.administrationPlugin.limit}" value="1000" />
+																<f:setPropertyActionListener
+																	target="#{AdministrationForm.administrationPlugin.limit}" value="1000" />
 															</button>
 														</li>
 														<li>
@@ -220,8 +219,8 @@
 																jsf:id="limitResults10000">
 																<h:outputText
 																	value="#{msgs.goobiScript_setMaxEntries} 10.000" />
-																<x:updateActionListener
-																	property="#{AdministrationForm.administrationPlugin.limit}" value="10000" />
+																<f:setPropertyActionListener
+																	target="#{AdministrationForm.administrationPlugin.limit}" value="10000" />
 															</button>
 														</li>
 														<li>
@@ -230,8 +229,8 @@
 																jsf:id="limitResults1000000">
 																<h:outputText
 																	value="#{msgs.goobiScript_setMaxEntries} 1.000.000" />
-																<x:updateActionListener
-																	property="#{AdministrationForm.administrationPlugin.limit}" value="1000000" />
+																<f:setPropertyActionListener
+																	target="#{AdministrationForm.administrationPlugin.limit}" value="1000000" />
 															</button>
 														</li>
 													</ul>
@@ -244,7 +243,7 @@
 									<!-- // summary above the result table -->
 	
 									<!-- result table -->
-									<x:dataTable id="resultTable"
+									<h:dataTable id="resultTable"
 										styleClass="table table-hover table-nomargin dataTable table-bordered responsive"
 										var="item"
 										value="#{AdministrationForm.administrationPlugin.resultsLimited}">
@@ -321,7 +320,7 @@
 	                                                target="#{NavigationForm.uiStatus.mets_toc5}" />
 	                                        </h:commandLink>
 										</h:column>
-									</x:dataTable>
+									</h:dataTable>
 									<!-- // result table -->
 								</div>
 							</h:form>
